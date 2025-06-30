@@ -44,6 +44,7 @@ dependencies {
 	implementation group: 'org.json', name: 'json', version: '20160810'
 
 	implementation 'javax.validation:validation-api:2.0.1.Final'
+
 }
 
 tasks.named('test') {

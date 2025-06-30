@@ -29,7 +29,6 @@ spring:
             type:
               descriptor:
                 sql: trace
-
   sql:
     init:
       mode: always
@@ -37,3 +36,6 @@ kakao:
   client-id: ${KAKAO_CLIENT_ID}
   redirect-url: ${KAKAO_REDIRECT_URL}
   admin-key: ${KAKAO_ADMIN_KEY}
+
+firebase:
+  api-key: ${FIREBASE_API_KEY}

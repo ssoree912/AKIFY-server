@@ -6,8 +6,17 @@ import lombok.Setter;
 public class UserRequest {
     @Getter
     @Setter
-    public static class Token{
+    public static class Auth {
         private String token;
+        private String state;
+        private String email;
+        private String password;
 
+    }
+    @Setter
+    @Getter
+    public static class Firebase {
+        private String email;
+        private String password;
     }
 }

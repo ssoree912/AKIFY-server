@@ -61,7 +61,7 @@ public class KakaoService {
         String accessToken = jsonObject.getString("access_token");
         return accessToken;
     }
-    public KakaoDTO.KaKaoInfo createKakaoUser(String accessToken) throws Exception {
+    public KakaoDTO.KaKaoInfo createKakaoUser(String accessToken)  {
         log.info(">>>>>>>>>> {}", accessToken);
         String reqURL = "https://kapi.kakao.com/v2/user/me";
         String email = "";
@@ -95,11 +95,11 @@ public class KakaoService {
             uid = element.getAsJsonObject().get("id").getAsString();
             br.close();
             KakaoDTO.KaKaoInfo kaKaoInfo = KakaoDTO.KaKaoInfo.builder().uid(uid).build();
-        return kaKaoInfo;
+            return kaKaoInfo;
 
         } catch (IOException e) {
             e.printStackTrace();
-            throw new Exception(e.getMessage() );
+            throw new TokenException("카카오 엑세스 토큰 오류");
         }
     }
 
@@ -154,5 +154,4 @@ public class KakaoService {
     }
 
 
-    }
-
+}
