@@ -1,0 +1,39 @@
+spring:
+  config:
+    import:
+      - optional:file:.env[.properties]
+  application:
+    name: server
+  jackson:
+    time-zone: Asia/Seoul
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://${LOCAL_POSTGRESQL_HOST}:${LOCAL_POSTGRESQL_PORT}/${DB_NAME}
+    username: ${LOCAL_POSTGRESQL_USERNAME}
+    password: ${LOCAL_POSTGRESQL_PASSWORD}
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  jpa:
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        show_sql: true
+    logging:
+      level:
+        org:
+          hibernate:
+            type:
+              descriptor:
+                sql: trace
+
+  sql:
+    init:
+      mode: always
+kakao:
+  client-id: ${KAKAO_CLIENT_ID}
+  redirect-url: ${KAKAO_REDIRECT_URL}
+  admin-key: ${KAKAO_ADMIN_KEY}
