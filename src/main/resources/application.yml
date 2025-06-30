@@ -39,3 +39,8 @@ kakao:
 
 firebase:
   api-key: ${FIREBASE_API_KEY}
+
+naver:
+    client-id: ${NAVER_CLIENT_ID}
+    client-secret: ${NAVER_CLIENT_SECRET}
+    redirect-url: ${NAVER_REDIRECT_URL}
