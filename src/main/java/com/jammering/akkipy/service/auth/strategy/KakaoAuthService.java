@@ -1,8 +1,11 @@
 package com.jammering.akkipy.service.auth.strategy;
 
 import com.google.gson.JsonParser;
-import com.jammering.akkipy.controller.request.UserRequest;
+import com.jammering.akkipy.config.jwt.JwtProvider;
+import com.jammering.akkipy.controller.dto.request.UserRequest;
+import com.jammering.akkipy.controller.dto.response.TokenResponse;
 import com.jammering.akkipy.domain.userLogin.Provider;
+import com.jammering.akkipy.domain.userLogin.UserLoginRepository;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,15 +32,21 @@ public class KakaoAuthService extends AbstractOAuthService {
     @Value("${kakao.admin-key}")
     private String adminKey;
 
+    private final UserLoginRepository userLoginRepository;
+    private final JwtProvider jwtProvider;
+
     @Override
     public boolean supports(Provider provider) {
         return provider == Provider.KAKAO;
     }
 
     @Override
-    public String signIn(UserRequest.Auth auth, Provider provider) throws Exception {
+    public TokenResponse.ToKenInfo signIn(UserRequest.Auth auth, Provider provider) throws Exception {
         String accessToken = getKakaoAccessToken(auth.getToken());
-        return getUserIdFromAccessToken(accessToken);
+        String uid = getUserIdFromAccessToken(accessToken);
+        return userLoginRepository.findByProviderAndProviderId(provider, uid)
+                .map(userLogin -> jwtProvider.generateToken(userLogin.getUser().getUserId(), userLogin.getUser().getRole())) // 가입되어 있음 → 정식 토큰
+                .orElseGet(() -> jwtProvider.generateTemporaryToken(uid, provider)); // 가입되어 있지 않음 → 임시 토큰
     }
 
     private String getKakaoAccessToken(String code) throws Exception {

@@ -1,5 +1,6 @@
 package com.jammering.akkipy.domain.userLogin;
 
+import com.jammering.akkipy.domain.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,4 +21,8 @@ public class UserLogin {
     private Provider provider;
     private String providerId;
     private String email;
+
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 }

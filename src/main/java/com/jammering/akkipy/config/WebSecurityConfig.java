@@ -15,29 +15,30 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
+import static com.jammering.akkipy.config.PermitAllPaths.PATHS;
+
 @RequiredArgsConstructor
 @EnableWebSecurity
 @Configuration
 @EnableMethodSecurity(securedEnabled = true)
 public class WebSecurityConfig {
 
-    private static final String[] AUTH_WHITELIST ={
-            "/**",
-            "/","/swagger-ui/index.html","auth-service/api/v2/**","/api/v2/auth/**","**/index.html","/api/docs/v2/**","/v3/**","/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**"
-             };
-    private final RedisTemplate redisTemplate;
+
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
-        http.csrf((csrf) -> csrf.disable());
-        http.cors(Customizer.withDefaults());
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http.csrf(csrf -> csrf.disable())
+                .cors(Customizer.withDefaults())
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .formLogin(AbstractHttpConfigurer::disable)
+                .httpBasic(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(PATHS).permitAll()
+                        .requestMatchers("api/v1/auth/signup/**").hasRole("GUEST")
+                        .anyRequest().hasRole("USER")
+                );
 
-        http.sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-
-        http.formLogin((form) -> form.disable());
-        http.httpBasic(AbstractHttpConfigurer::disable);
         return http.build();
-
     }
 
 

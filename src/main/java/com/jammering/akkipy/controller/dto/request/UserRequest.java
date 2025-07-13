@@ -1,4 +1,4 @@
-package com.jammering.akkipy.controller.request;
+package com.jammering.akkipy.controller.dto.request;
 
 import lombok.Getter;
 import lombok.Setter;

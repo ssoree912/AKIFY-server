@@ -32,6 +32,10 @@ spring:
   sql:
     init:
       mode: always
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
 kakao:
   client-id: ${KAKAO_CLIENT_ID}
   redirect-url: ${KAKAO_REDIRECT_URL}
@@ -44,3 +48,11 @@ naver:
     client-id: ${NAVER_CLIENT_ID}
     client-secret: ${NAVER_CLIENT_SECRET}
     redirect-url: ${NAVER_REDIRECT_URL}
+jwt:
+  secret: ${JWT_SECRET_KEY}
+  guest-token:
+    expiration: ${JWT_GUEST_TOKEN_EXPIRATION}
+  access-token:
+        expiration: ${JWT_ACCESS_TOKEN_EXPIRATION}
+  refresh-token:
+        expiration: ${JWT_REFRESH_TOKEN_EXPIRATION}

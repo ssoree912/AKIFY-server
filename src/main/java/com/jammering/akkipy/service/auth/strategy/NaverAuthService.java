@@ -1,8 +1,11 @@
 package com.jammering.akkipy.service.auth.strategy;
 
 import com.google.gson.JsonParser;
-import com.jammering.akkipy.controller.request.UserRequest;
+import com.jammering.akkipy.config.jwt.JwtProvider;
+import com.jammering.akkipy.controller.dto.request.UserRequest;
+import com.jammering.akkipy.controller.dto.response.TokenResponse;
 import com.jammering.akkipy.domain.userLogin.Provider;
+import com.jammering.akkipy.domain.userLogin.UserLoginRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -21,6 +24,8 @@ public class NaverAuthService extends AbstractOAuthService {
     private String clientSecret;
     @Value("${naver.redirect-url}")
     private String redirectUri;
+    private final UserLoginRepository userLoginRepository;
+    private final JwtProvider jwtProvider;
 
     @Override
     public boolean supports(Provider provider) {
@@ -28,9 +33,13 @@ public class NaverAuthService extends AbstractOAuthService {
     }
 
     @Override
-    public String signIn(UserRequest.Auth auth, Provider provider) {
+    public TokenResponse.ToKenInfo signIn(UserRequest.Auth auth, Provider provider) {
+        String uid;
         String accessToken = getAccessToken(auth.getToken(), auth.getState());
-        return getUserInfo(accessToken);
+        uid = getUserInfo(accessToken);
+        return userLoginRepository.findByProviderAndProviderId(provider, uid)
+                .map(userLogin -> jwtProvider.generateToken(userLogin.getUser().getUserId(), userLogin.getUser().getRole())) // 가입되어 있음 → 정식 토큰
+                .orElseGet(() -> jwtProvider.generateTemporaryToken(uid, provider)); // 가입되어 있지 않음 → 임시 토큰
     }
 
     private String getAccessToken(String code, String state) {
