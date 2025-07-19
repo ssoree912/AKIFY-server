@@ -1,4 +1,3 @@
-
 package com.jammering.akkipy.config;
 
 import com.jammering.akkipy.config.jwt.JwtAuthenticationFilter;

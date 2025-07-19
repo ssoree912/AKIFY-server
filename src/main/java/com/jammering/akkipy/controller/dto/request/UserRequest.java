@@ -25,4 +25,10 @@ public class UserRequest {
     public static class SignUp {
         private String nickname;
     }
+
+    @Getter
+    @Setter
+    public static class Reissue {
+        private String refreshToken;
+    }
 }

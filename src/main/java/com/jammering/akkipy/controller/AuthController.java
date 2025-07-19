@@ -8,6 +8,7 @@ import com.jammering.akkipy.controller.dto.response.UserResponse;
 import com.jammering.akkipy.domain.userLogin.CustomUserDetails;
 import com.jammering.akkipy.domain.userLogin.Provider;
 import com.jammering.akkipy.service.UserService;
+import com.jammering.akkipy.service.auth.AuthService;
 import com.jammering.akkipy.service.auth.AuthStrategyManager;
 import com.jammering.akkipy.service.auth.strategy.FirebaseAuthService;
 import lombok.RequiredArgsConstructor;
@@ -26,13 +27,14 @@ public class AuthController {
     private final AuthStrategyManager authStrategyManager;
     private final FirebaseAuthService firebaseAuthService;
     private final UserService userService;
+    private final AuthService authService;
 
     @PostMapping("signin/{provider}")
     public ResponseEntity<APIResponse<TokenResponse.ToKenInfo>> login(@PathVariable Provider provider, @RequestBody UserRequest.Auth auth) throws Exception {
         APIResponse response =  APIResponse.of(SuccessCode.SELECT_SUCCESS,authStrategyManager.signIn(provider, auth));
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
-    @PostMapping("signup/email")
+    @PostMapping("email")
     public void firebaseSignUp(@RequestBody UserRequest.Firebase firebase) throws Exception {
         firebaseAuthService.createAccountInFirebase(firebase.getEmail(), firebase.getPassword());
     }
@@ -41,6 +43,14 @@ public class AuthController {
         UserResponse.UserTokenInfo userTokenInfo =userService.registerUser(signUp.getNickname(), userDetails.getCustomUserInfoDto().getUid(), userDetails.getCustomUserInfoDto().getProvider());
         APIResponse response = APIResponse.of(SuccessCode.INSERT_SUCCESS, userTokenInfo);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
+
+    }
+
+    @PostMapping("/reissue")
+    public ResponseEntity<APIResponse<TokenResponse.ToKenInfo>> reissue(@RequestBody UserRequest.Reissue reissue) {
+        TokenResponse.ToKenInfo tokenInfo = authService.reissueToken(reissue.getRefreshToken());
+        APIResponse response = APIResponse.of(SuccessCode.SELECT_SUCCESS, tokenInfo);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
 }

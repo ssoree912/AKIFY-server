@@ -16,11 +16,16 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
+
+import static com.jammering.akkipy.config.PermitAllPaths.PATHS;
 
 @Component
 @RequiredArgsConstructor
@@ -30,6 +35,27 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtProvider jwtProvider;
     private final CustomUserDetailsService customUserDetailsService;
     private final UserRepository userRepository;
+
+    private static final String[] SIGNUP_PATH = {"/api/v1/auth/signup/**"};
+    private static final List<AntPathRequestMatcher> PUBLIC_URL_MATCHERS =
+            Stream.of(PATHS, SIGNUP_PATH)
+                    .flatMap(Stream::of)
+                    .map(AntPathRequestMatcher::new)
+                    .toList();
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        boolean shouldNotFilter = PUBLIC_URL_MATCHERS.stream()
+                .anyMatch(matcher -> matcher.matches(request));
+
+        if (shouldNotFilter) {
+            log.info("Skipping JWT filter for public path: {}", request.getRequestURI());
+        } else {
+            log.info("Applying JWT filter for protected path: {}", request.getRequestURI());
+        }
+
+        return shouldNotFilter;
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,

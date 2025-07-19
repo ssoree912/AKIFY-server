@@ -47,7 +47,7 @@ public class JwtProvider {
         claims.put("role", role);
         claims.put("signup", true);
 
-        return createToken(claims, JWT_ACCESS_TOKEN_EXPIRATION,Role.USER );
+        return createToken(claims, JWT_ACCESS_TOKEN_EXPIRATION,role );
     }
 
     private TokenResponse.ToKenInfo createToken(Claims claims, long expireTime, Role role) {
