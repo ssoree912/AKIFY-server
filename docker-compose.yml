@@ -15,6 +15,30 @@ services:
       - postgres-data:/var/lib/postgresql/data
     networks:
       - app-network
+  redis:
+    image: redis:7.2
+    container_name: redis
+    restart: always
+    ports:
+      - "6379:6379"
+    command: redis-server --port 6379
+    networks:
+      - app-network
+
+#  app:
+#    build: .
+#    container_name: app
+#    depends_on:
+#      - redis
+#    environment:
+#      - SPRING_REDIS_HOST=redis
+#      - SPRING_REDIS_PORT=6379
+#      - SPRING_REDIS_PASSWORD=yourStrongRedisPass
+#    networks:
+#      - app-network
+#    ports:
+#      - "8080:8080"
+
 
   es:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.15.2
@@ -47,14 +71,7 @@ services:
       - es
     networks:
       - app-network
-  redis:
-    image: redis:7.2
-    container_name: redis
-    restart: always
-    ports:
-      - "6379:6379"
-    networks:
-      - app-network
+
 
 
 volumes:
@@ -62,4 +79,4 @@ volumes:
 
 networks:
   app-network:
-    driver: bridgec docker
+    driver: bridge

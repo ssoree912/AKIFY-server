@@ -25,4 +25,13 @@ public class UserLogin {
     @OneToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+    public static UserLogin toEntity(User savedUser, String providerId, Provider provider) {
+        return UserLogin.builder()
+                .user(savedUser)
+                .providerId(providerId)
+                .provider(provider)
+                .email("email.ex")
+                .build();
+    }
 }

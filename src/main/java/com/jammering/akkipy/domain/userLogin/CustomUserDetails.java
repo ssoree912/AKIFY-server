@@ -14,23 +14,23 @@ import java.util.stream.Collectors;
 @Getter
 @RequiredArgsConstructor
 public class CustomUserDetails implements UserDetails {
-    private final UserLoginInfoDto customUserInfo;
+    private final CustomUserInfoDto customUserInfoDto;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<String> roles = new ArrayList<>();
-        roles.add(customUserInfo.getRole().toString());
+        roles.add(customUserInfoDto.getRole().toString());
         return roles.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
     }
 
     @Override
     public String getPassword() {
-        return customUserInfo.getPassword();
+        return customUserInfoDto.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return customUserInfo.getUserId().toString();
+        return customUserInfoDto.getUserId().toString();
     }
 
     @Override

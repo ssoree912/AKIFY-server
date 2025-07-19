@@ -19,4 +19,10 @@ public class UserRequest {
         private String email;
         private String password;
     }
+
+    @Getter
+    @Setter
+    public static class SignUp {
+        private String nickname;
+    }
 }

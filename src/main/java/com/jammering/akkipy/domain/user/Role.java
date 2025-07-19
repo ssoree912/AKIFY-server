@@ -1,8 +1,9 @@
 package com.jammering.akkipy.domain.user;
 
 public enum Role {
-    USER("ROLE_USER"),
-    ADMIN("ROLE_ADMIN");
+    USER("roleUser"),
+    ADMIN("roleAdmin"),
+    GUEST("roleGuest");
 
     private final String value;
 

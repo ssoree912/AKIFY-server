@@ -22,4 +22,13 @@ public class User extends BaseTimeEntity {
     private boolean isVerified;
     private Role role;
 
+    public static User toEntity(String nickname){
+        return User.builder()
+                .nickname(nickname)
+                .name("미입력")
+                .phone("미입력")
+                .isVerified(false)
+                .role(Role.USER)
+                .build();
+    }
 }
