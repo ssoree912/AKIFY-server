@@ -17,7 +17,9 @@ public class UserLogin {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userLoginId;
+
     @Column
+    @Enumerated(EnumType.STRING)
     private Provider provider;
     private String providerId;
     private String email;

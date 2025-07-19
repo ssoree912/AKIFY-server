@@ -1,0 +1,69 @@
+spring:
+  config:
+    import:
+      - optional:file:.env[.properties]
+  application:
+    name: server
+  jackson:
+    time-zone: Asia/Seoul
+  datasource:
+    driver-class-name: org.h2.Driver # Use H2 for tests
+    url: jdbc:h2:mem:testdb
+    username: sa
+    password: password
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        show_sql: true
+    logging:
+      level:
+        org:
+          hibernate:
+            type:
+              descriptor:
+                sql: trace
+  sql:
+    init:
+      mode: never # Disable DB initialization for tests
+  data:
+    redis:
+      host: localhost # Assuming redis is on localhost for tests
+      port: 6379
+
+kakao:
+  client-id: test-kakao-client-id
+  redirect-url: test-kakao-redirect-url
+  admin-key: test-kakao-admin-key
+
+firebase:
+  api-key: test-firebase-api-key
+
+naver:
+  client-id: test-naver-client-id
+  client-secret: test-naver-client-secret
+  redirect-url: test-naver-redirect-url
+
+jwt:
+  secret: test-jwt-secret-key-that-is-long-enough-to-be-secure
+  guest-token:
+    expiration: 3600000
+  access-token:
+    expiration: 604800000
+  refresh-token:
+    expiration: 1209600000
+
+cloud:
+  aws:
+    credentials:
+      access-key: test-aws-access-key
+      secret-key: test-aws-secret-key
+    region:
+      static: ap-northeast-2
+    stack:
+      auto: false

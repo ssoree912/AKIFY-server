@@ -69,6 +69,7 @@ public class JwtProvider {
         redisService.setValuesWithTimeUnit("RefreshToken:" + userId, refreshToken, refreshTokenExpireTime, TimeUnit.MILLISECONDS);
         return new TokenResponse.ToKenInfo(BEARER_TYPE,accessToken,refreshToken , refreshTokenExpireTime, role);
     }
+    
 
     public Claims getClaims(String token) {
         return Jwts.parser()

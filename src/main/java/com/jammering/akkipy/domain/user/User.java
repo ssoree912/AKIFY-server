@@ -20,6 +20,7 @@ public class User extends BaseTimeEntity {
     private String name;
     private String phone;
     private boolean isVerified;
+    @Enumerated(EnumType.STRING)
     private Role role;
 
     public static User toEntity(String nickname){

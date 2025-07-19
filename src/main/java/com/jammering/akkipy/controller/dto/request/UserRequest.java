@@ -31,4 +31,18 @@ public class UserRequest {
     public static class Reissue {
         private String refreshToken;
     }
+
+    @Getter
+    @Setter
+    public static class SendEmailVerification {
+        private String email;
+    }
+
+    @Getter
+    @Setter
+    public static class VerifyEmail {
+        private String email;
+        private String password;
+        private String code;
+    }
 }

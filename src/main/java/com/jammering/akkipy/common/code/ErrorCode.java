@@ -56,6 +56,7 @@ public enum ErrorCode {
     UNAUTHORIZED_ERROR(401, "G020", "Invalid Token Exception"),
     NO_AUTHORIZATION_HEADER(401, "G021", "no authorization header"),
     INVALID_REFRESH_TOKEN(401, "G022", "Invalid Refresh Token"),
+    INVALID_VERIFICATION_CODE(400, "G023", "Invalid or expired verification code"),
 
     // 서버가 처리 할 방법을 모르는 경우 발생
     INTERNAL_SERVER_ERROR(500, "G999", "Internal Server Error Exception"),

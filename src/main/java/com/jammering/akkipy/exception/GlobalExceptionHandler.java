@@ -230,6 +230,20 @@ public class GlobalExceptionHandler {
         final ErrorResponse response = ErrorResponse.of(ErrorCode.UNAUTHORIZED_ERROR, ex.getMessage());
         return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
     }
+
+    /**
+     * [Exception] 이메일 인증 코드 에러
+     *
+     * @param ex EmailVerificationException
+     * @return ResponseEntity<ErrorResponse>
+     */
+    @ExceptionHandler(EmailVerificationException.class)
+    protected ResponseEntity<ErrorResponse> handleEmailVerificationException(EmailVerificationException ex) {
+        log.error("EmailVerificationException", ex);
+        final ErrorResponse response = ErrorResponse.of(ex.getErrorCode());
+        return new ResponseEntity<>(response, HttpStatus.valueOf(ex.getErrorCode().getStatus()));
+    }
+
 //    토큰 401에러
     @ExceptionHandler({
             io.jsonwebtoken.security.SecurityException.class,

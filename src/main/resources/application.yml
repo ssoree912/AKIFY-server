@@ -56,3 +56,9 @@ jwt:
         expiration: ${JWT_ACCESS_TOKEN_EXPIRATION}
   refresh-token:
         expiration: ${JWT_REFRESH_TOKEN_EXPIRATION}
+
+aws:
+  ses:
+    access_key: ${AWS_ACCESS_KEY_ID}
+    secret_key: ${AWS_SECRET_ACCESS_KEY}
+    email: ${AWS_SES_EMAIL}

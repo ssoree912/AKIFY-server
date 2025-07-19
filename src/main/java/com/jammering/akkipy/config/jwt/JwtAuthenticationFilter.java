@@ -1,5 +1,6 @@
 package com.jammering.akkipy.config.jwt;
 
+import com.jammering.akkipy.config.PermitAllPaths;
 import com.jammering.akkipy.domain.user.UserRepository;
 import com.jammering.akkipy.domain.userLogin.CustomUserDetails;
 import com.jammering.akkipy.domain.userLogin.CustomUserInfoDto;
@@ -16,14 +17,12 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.util.AntPathMatcher;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Stream;
 
 import static com.jammering.akkipy.config.PermitAllPaths.PATHS;
 
@@ -34,27 +33,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtProvider jwtProvider;
     private final CustomUserDetailsService customUserDetailsService;
-    private final UserRepository userRepository;
-
-    private static final String[] SIGNUP_PATH = {"/api/v1/auth/signup/**"};
-    private static final List<AntPathRequestMatcher> PUBLIC_URL_MATCHERS =
-            Stream.of(PATHS, SIGNUP_PATH)
-                    .flatMap(Stream::of)
-                    .map(AntPathRequestMatcher::new)
-                    .toList();
+    private final AntPathMatcher antPathMatcher = new AntPathMatcher();
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-        boolean shouldNotFilter = PUBLIC_URL_MATCHERS.stream()
-                .anyMatch(matcher -> matcher.matches(request));
-
-        if (shouldNotFilter) {
-            log.info("Skipping JWT filter for public path: {}", request.getRequestURI());
-        } else {
-            log.info("Applying JWT filter for protected path: {}", request.getRequestURI());
+        String requestURI = request.getRequestURI();
+        for (String path : PATHS) {
+            if (antPathMatcher.match(path, requestURI)) {
+                return true;
+            }
         }
-
-        return shouldNotFilter;
+        return false;
     }
 
     @Override
@@ -78,9 +67,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 userInfoDto = ((CustomUserDetails) userDetails).getCustomUserInfoDto();
             } else {
                 // GUEST 유저는 DB 조회 없이 생성
-                userInfoDto = CustomUserInfoDto.toGuestDto(subject, provider,role);
+                userInfoDto = CustomUserInfoDto.toGuestDto(subject, provider, role);
             }
-            log.info(role);
             CustomUserDetails customUserDetails = new CustomUserDetails(userInfoDto);
             List<GrantedAuthority> authorities = List.of(
                     new SimpleGrantedAuthority("ROLE_" + userInfoDto.getRole())
@@ -100,6 +88,4 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String bearer = request.getHeader("Authorization");
         return (bearer != null && bearer.startsWith("Bearer ")) ? bearer.substring(7) : null;
     }
-
-
 }

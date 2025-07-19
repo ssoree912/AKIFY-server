@@ -4,6 +4,7 @@ import com.jammering.akkipy.common.code.ErrorCode;
 import com.jammering.akkipy.config.jwt.JwtProvider;
 import com.jammering.akkipy.controller.dto.response.TokenResponse;
 import com.jammering.akkipy.domain.user.Role;
+import com.jammering.akkipy.domain.userLogin.Provider;
 import com.jammering.akkipy.exception.TokenException;
 import com.jammering.akkipy.service.RedisService;
 import io.jsonwebtoken.Claims;
@@ -26,12 +27,17 @@ public class AuthService {
         String userId = claims.getSubject();
 
         // 3. Redis에서 저장된 Refresh Token 가져오기
-        String storedRefreshToken = redisService.getRefrestToken(userId);
+        String storedRefreshToken = redisService.getRefreshToken(userId);
         if (storedRefreshToken == null || !storedRefreshToken.equals(refreshToken)) {
             throw new TokenException(ErrorCode.INVALID_REFRESH_TOKEN.getMessage());
         }
 
         // 4. 새로운 토큰 생성
-        return jwtProvider.generateToken(Long.parseLong(userId), Role.valueOf((String) claims.get("role")));
+        if (jwtProvider.isTemporaryToken(refreshToken)) {
+            Provider provider = Provider.valueOf((String) claims.get("provider"));
+            return jwtProvider.generateTemporaryToken(userId, provider);
+        } else {
+            return jwtProvider.generateToken(Long.parseLong(userId), Role.valueOf((String) claims.get("role")));
+        }
     }
 }
