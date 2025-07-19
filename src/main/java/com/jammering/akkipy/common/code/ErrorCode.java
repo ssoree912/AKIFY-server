@@ -90,7 +90,7 @@ public enum ErrorCode {
     // 에러 코드의 '코드간 구분 값'을 반환한다.
     private final String divisionCode;
 
-    // 에러 코드의 '코드 메시지'을 반환한다.
+    // 에러 코드의 '코드 메시지'을 반in환한다.
     private final String message;
 
     // 생성자 구성

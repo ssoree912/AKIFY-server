@@ -18,7 +18,8 @@ spring:
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
+    defer-datasource-initialization: true
     properties:
       hibernate:
         show_sql: true
@@ -32,6 +33,7 @@ spring:
   sql:
     init:
       mode: always
+      data-locations: classpath:sql/init.sql
   data:
     redis:
       host: redis

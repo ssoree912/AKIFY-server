@@ -44,7 +44,7 @@ public class KakaoAuthService extends AbstractOAuthService {
     public TokenResponse.ToKenInfo signIn(UserRequest.Auth auth, Provider provider) throws Exception {
         String accessToken = getKakaoAccessToken(auth.getToken());
         String uid = getUserIdFromAccessToken(accessToken);
-        return userLoginRepository.findByProviderAndProviderId(provider, uid)
+        return userLoginRepository.findByProviderAndProviderUid(provider, uid)
                 .map(userLogin -> jwtProvider.generateToken(userLogin.getUser().getUserId(), userLogin.getUser().getRole())) // 가입되어 있음 → 정식 토큰
                 .orElseGet(() -> jwtProvider.generateTemporaryToken(uid, provider)); // 가입되어 있지 않음 → 임시 토큰
     }

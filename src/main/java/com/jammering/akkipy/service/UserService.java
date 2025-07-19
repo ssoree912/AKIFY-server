@@ -19,13 +19,13 @@ public class UserService {
     private final UserLoginRepository userLoginRepository;
     private final JwtProvider jwtProvider;
     @Transactional
-    public UserResponse.UserTokenInfo registerUser(String nickname, String providerId, Provider provider) {
+    public UserResponse.UserTokenInfo registerUser(String nickname, String providerUid, Provider provider) {
         if (userRepository.existsByNickname(nickname)) {
             throw new IllegalArgumentException("이미 사용 중인 닉네임입니다.");
         }
         User savedUser = userRepository.save(User.toEntity(nickname));
-        UserLogin userLogin = UserLogin.toEntity(savedUser, providerId, provider);
-        UserLogin savedUserLogin = userLoginRepository.findByProviderAndProviderId(provider, providerId)
+        UserLogin userLogin = UserLogin.toEntity(savedUser, providerUid, provider);
+        UserLogin savedUserLogin = userLoginRepository.findByProviderAndProviderUid(provider, providerUid)
                 .orElseGet(() -> userLoginRepository.save(userLogin));
         TokenResponse.ToKenInfo toKenInfo = jwtProvider.generateToken(savedUser.getUserId(), savedUser.getRole());
         return UserResponse.toUserTokenInfo(savedUser, toKenInfo);

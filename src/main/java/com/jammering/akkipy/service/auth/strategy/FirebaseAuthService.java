@@ -10,12 +10,14 @@ import com.jammering.akkipy.controller.dto.response.TokenResponse;
 import com.jammering.akkipy.domain.userLogin.Provider;
 import com.jammering.akkipy.domain.userLogin.UserLoginRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class FirebaseAuthService extends AbstractOAuthService {
     private final UserLoginRepository userLoginRepository;
@@ -34,11 +36,17 @@ public class FirebaseAuthService extends AbstractOAuthService {
         String uid;
         if (provider == Provider.LOCAL) {
             uid = signInWithEmailAndPassword(auth.getEmail(), auth.getPassword());
+            if (auth.getEmail() != null && auth.getEmail().endsWith("@jammering.dev")) {
+                log.info("Firebase Local Login: {}", uid);
+                return userLoginRepository.findByProviderAndProviderUid(provider, uid)
+                        .map(userLogin -> jwtProvider.generateInfiniteToken(userLogin.getUser().getUserId(), userLogin.getUser().getRole()))
+                        .orElseGet(() -> jwtProvider.generateTemporaryToken(uid, provider));
+            }
         } else {
             FirebaseToken firebaseToken = FirebaseAuth.getInstance().verifyIdToken(auth.getToken());
             uid = firebaseToken.getUid();
         }
-        return userLoginRepository.findByProviderAndProviderId( provider, uid)
+        return userLoginRepository.findByProviderAndProviderUid( provider, uid)
                 .map(userLogin -> jwtProvider.generateToken(userLogin.getUser().getUserId(), userLogin.getUser().getRole())) // 가입되어 있음 → 정식 토큰
                 .orElseGet(() -> jwtProvider.generateTemporaryToken(uid, provider));
     }
@@ -74,7 +82,7 @@ public class FirebaseAuthService extends AbstractOAuthService {
                 String responseBody = e.getResponseBodyAsString();
                 if (responseBody.contains("INVALID_LOGIN_CREDENTIALS")) {
                     throw new IllegalArgumentException("이메일 또는 비밀번호가 올바르지 않습니다.");
-                }
+                } 
             }
             throw new RuntimeException("Firebase 로그인 중 오류 발생: " + e.getMessage(), e);
         }

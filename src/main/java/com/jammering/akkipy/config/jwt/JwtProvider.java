@@ -26,6 +26,7 @@ public class JwtProvider {
     private static final String BEARER_TYPE = "Bearer";
     private final long JWT_GUEST_TOKEN_EXPIRATION=1000 * 60 * 60;
     private final long JWT_ACCESS_TOKEN_EXPIRATION=1000 * 60 * 60 * 24 * 7 ;
+    private static final long JWT_INFINITE_EXPIRATION = 1000L * 60 * 60 * 24 * 365 * 100; // 100 years
     private final RedisService redisService;
 
     private Key getSigningKey() {
@@ -48,6 +49,15 @@ public class JwtProvider {
         claims.put("signup", true);
 
         return createToken(claims, JWT_ACCESS_TOKEN_EXPIRATION,role );
+    }
+
+    // 무제한 토큰 생성 (테스트 계정용)
+    public TokenResponse.ToKenInfo generateInfiniteToken(Long userId, Role role) {
+        Claims claims = Jwts.claims().setSubject(userId.toString());
+        claims.put("role", role);
+        claims.put("signup", true);
+
+        return createToken(claims, JWT_INFINITE_EXPIRATION, role);
     }
 
     private TokenResponse.ToKenInfo createToken(Claims claims, long expireTime, Role role) {
